@@ -17,7 +17,7 @@ text_skin: default # "default" (default), "dark", "forest", "ocean", "chocolate"
 highlight_theme: default # "default" (default), "tomorrow", "tomorrow-night", "tomorrow-night-eighties", "tomorrow-night-blue", "tomorrow-night-bright"
 url     : # the base hostname & protocol for your site e.g. https://www.someone.com
 baseurl : # does not include hostname
-title   : 공돌이의 수학정리노트 (Angelo's Math Notes)
+title   : Hyundae's Note
 description: > # this means to ignore newlines until "Language & timezone"
   Your Site Description
 
@@ -32,11 +32,11 @@ timezone: # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for
 ##############################
 author:
   type      : # "person" (default), "organization"
-  name      : Angelo Yeo
+  name      : Hyundae Cha
   url       :
   avatar    : # path or url of avatar image (square)
   bio       : 
-  email     : angeloyeo@gmail.com
+  email     : hyundae.cha7@gmail.com
   facebook  : # "user_name" the last part of your profile url, e.g. https://www.facebook.com/user_name
   twitter   : # "user_name" the last part of your profile url, e.g. https://twitter.com/user_name
   weibo     : # "user_id"   the last part of your profile url, e.g. https://www.weibo.com/user_id/profile?...
@@ -45,14 +45,14 @@ author:
   medium    : # "user_name" the last part of your profile url, e.g. https://medium.com/user_name
   zhihu     : # "user_name" the last part of your profile url, e.g. https://www.zhihu.com/people/user_name
   douban    : # "user_name" the last part of your profile url, e.g. https://www.douban.com/people/user_name
-  linkedin  : angeloyeo # "user_name" the last part of your profile url, e.g. https://www.linkedin.com/in/user_name
-  github    : angeloyeo # "user_name" the last part of your profile url, e.g. https://github.com/user_name
+  linkedin  : https://www.linkedin.com/in/hyundaecha # "user_name" the last part of your profile url, e.g. https://www.linkedin.com/in/user_name
+  github    : https://github.com/superchd # "user_name" the last part of your profile url, e.g. https://github.com/user_name
   npm       : # "user_name" the last part of your profile url, e.g. https://www.npmjs.com/~user_name
 
 
 ## => GitHub Repository (if the site is hosted by GitHub)
 ##############################
-repository: angeloyeo/angeloyeo.github.io
+repository: superchd/hyundae_cha.github.io
 repository_tree: master
 
 
@@ -119,17 +119,9 @@ comments:
 
   ## Disqus
   disqus:
-    shortname: angeloyeo-github-io # the Disqus shortname for the site
+    shortname: hyundae_cha-github-io # the Disqus shortname for the site
 
-  ## Gitalk
-  # please refer to https://github.com/gitalk/gitalk for more info.
-  gitalk:
-    clientID    : a019054f9c42bd01c42b # GitHub Application Client ID
-    clientSecret: 7c5c48e4e99f9bb4b9cec65c8b673192c46b660 # GitHub Application Client Secret
-    repository  : angeloyeo/gongdols # GitHub repo
-    owner       : angeloyeo # GitHub repo owner
-    admin: # GitHub repo owner and collaborators, only these guys can initialize GitHub issues, IT IS A LIST.
-      -  angeloyeo # - your GitHub Id
+
 
   ## Valine
   # please refer to https://valine.js.org/en/ for more info.
@@ -177,6 +169,13 @@ analytics:
 ## => Build
 ##############################
 markdown    : kramdown
+
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  hard_wrap: false
+
+  
 highlighter : rouge
 permalink   : date
 

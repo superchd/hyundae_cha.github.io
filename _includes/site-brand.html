@@ -1,0 +1,12 @@
+<a class="brand" href="{{ '/' | relative_url }}">
+  {% assign brand_title = site.navbar.brand.title | default: site.title %}
+  {% if site.navbar and site.navbar.brand and site.navbar.brand.image %}
+    <img src="{{ site.navbar.brand.image | relative_url }}" alt="{{ brand_title }}">
+  {% elsif site.logo %}
+    <img src="{{ site.logo | relative_url }}" alt="{{ brand_title }}">
+  {% endif %}
+  {{ brand_title }}
+  {% if site.tagline %}
+    <span class="brand-subtitle">{{ site.tagline }}</span>
+  {% endif %}
+</a>
