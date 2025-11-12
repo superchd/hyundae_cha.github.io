@@ -93,10 +93,13 @@ docs-ko:
       - title:  가우스/가우스-조던 소거법
         url:    2021/06/19/Gauss_elimination.html
 
-  - title:      다관절 로봇
+  - title:      제어
     children:
       - title:  토크
         url:    2025/10/31/torque.html
+      - title:  PID 컨트롤
+        url:    2025/11/12/pid-control.html
+
 
 
   - title:      인공지능

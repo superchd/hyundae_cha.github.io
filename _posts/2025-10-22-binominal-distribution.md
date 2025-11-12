@@ -1,14 +1,13 @@
 ---
 title: 이항 분포
+sidebar:
+  nav: docs-ko
+aside:
+  toc: true
 key: 20251022
-tags: [이항분포]
+tags: 이항 분포
 lang: ko
-toc: true        # 테마에 따라 무시될 수 있음(무해함)
-# Minimal Mistakes를 쓰면 페이지별 수식 로드는 다음 둘 중 하나를 사용:
-# math: true  또는 mathjax: true
-# (네 테마 문서에 나온 키를 사용하되, 없으면 아래 _config.yml 전역설정을 쓰면 됨)
 ---
-
 # 이산 확률변수와 PMF/CDF — 한 장 요약
 
 - **이산 랜덤변수 \(X\)**: 실험 결과를 \(0,1,2,\dots\) 같은 **가산 값**에 매핑  
