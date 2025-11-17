@@ -1,3 +1,18 @@
+---
+title: 검정 통계량
+sidebar:
+  nav: docs-ko
+aside:
+  toc: true
+key: 20251112
+tags: 검정 통계량
+lang: ko
+math: true
+---
+
+
+
+
 ## 검정통계량
 
 통계적 가설의 진위 여부 판단하기 위해서 표본으로 부터 계산하는 통계량 

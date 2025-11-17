@@ -1,3 +1,16 @@
+---
+title: 귀무가설
+sidebar:
+  nav: docs-ko
+aside:
+  toc: true
+key: 20251112
+tags: 귀무가설
+lang: ko
+math: true
+---
+
+
 ### 귀무가설
 
 가정, 가설
@@ -36,11 +49,11 @@ T-분포는 평균 근처가 낮고 꼬리가 두꺼워 극단적인 값을 잘 
 
 
 
-![Screenshot 2025-11-10 at 2.06.20 PM](/Users/hyundae/Library/Application Support/typora-user-images/Screenshot 2025-11-10 at 2.06.20 PM.png)
 
 
 
-즉, 작은 표본에서 발생할 수 있는 불확실성을 잘 반영하기 때문에 이런 상황에서는 T-test가 적절하다. 
+
+즉, 작은 표본에서 발생할 수 있는 불확실성을 잘 반영하기 때문에 이런 상황에서는 T-test가 적절하다. ![스크린샷 2025-11-12 164231](\assets\images\2025-11-12-null-hypothesis\스크린샷 2025-11-12 164231.png)
 
 
 
