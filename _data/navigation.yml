@@ -55,16 +55,36 @@ docs-en:
         url:    2025/10/22/ROC-Curve_en.html
       - title:  Binominal distribution
         url:    2025/10/22/binominal-distribution_en.html
-      - title:  Relationship of Four Fundamental Subspaces
-        url:    2020/11/17/four_fundamental_subspaces_en.html
-      - title:  Change of Basis
-        url:    2020/12/07/change_of_basis_en.html
-      - title:  Elementary Square Matrices
-        url:    2021/06/15/elementary_square_matrices_en.html
-      - title:  LU Decomposition
-        url:    2021/06/16/LU_decomposition_en.html
-      - title:  Gauss/Gauss-Jordan Elimination
-        url:    2021/06/19/Gauss_elimination_en.html
+      - title:  Continous distribution
+        url:    2025/10/23/continous-distributions_en.html
+      - title:  Central limit theorem
+        url:    2025/10/31/central-limit-theorem.html
+      - title:  Maximum likelihood estimation
+        url:    2025/11/03/maximum-likelihood-theorem_en.html
+      - title:  Chi square
+        url:    2025/11/03/chi-square_en.html
+      - title:  Estimation
+        url:    2025/11/12/estimation_en.html
+      - title:  Null hypothesis
+        url:    2025/11/12/null-hypothesis_en.html
+
+  - title:      Control
+    children:
+      - title:  Torque
+        url:    2025/10/31/torque_en.html
+      - title:  PID control
+        url:    2025/11/12/pid-control_en.html
+
+  - title:      AI
+    children:
+      - title:  FMA score prediction model
+        url:    2025/11/12/FMA_Prediction_en.html
+
+  - title:      Algorithm
+    children:
+      - title:  space-center
+        url:    2025/11/17/space-center_en.html
+
 
 
 docs-ko:

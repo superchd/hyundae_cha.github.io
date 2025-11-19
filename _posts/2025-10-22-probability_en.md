@@ -10,345 +10,373 @@ lang: en
 math: true
 ---
 
-## Variability & Stability Metrics
+# Probability
 
-**Coefficient of Variation (CV)**  
-\[
-\mathrm{CV}=\frac{s}{\bar x}
-\]
-- Goal: compare **relative variability** after normalizing for mean level (reproducibility/stability).
-- Invariant to scale changes \(x\to a x\) since \(s\to |a|s,\ \bar x\to a\bar x\Rightarrow\) the ratio is unchanged.
+## 1. Variability and Stability Metrics
 
-**Signal-to-Noise Ratio (SNR)**  
-(example: standardized difference of two means)
-\[
+### Coefficient of Variation (CV)
+
+$$
+\mathrm{CV} = \frac{s}{\bar x}
+$$
+
+- Purpose: compare **relative variability** after normalizing for the mean level (reproducibility / stability).
+- Invariant to scale changes \(x \to a x\) since \(s \to |a|s\) and \(\bar x \to a \bar x\), so the ratio does not change.
+
+### Signal-to-Noise Ratio (SNR)
+
+(Example: standardized difference of two means.)
+
+$$
 \mathrm{SNR}
-=\frac{\bar x_1-\bar x_2}{\sqrt{(s_1^2+s_2^2)/2}}
-\]
-- Quantifies **separation/detectability** of two distributions. Reappears in Ch.3 (diagnostic tests/ROC).
+= \frac{\bar x_1 - \bar x_2}{\sqrt{(s_1^2 + s_2^2)/2}}
+$$
+
+- Quantifies **separation / detectability** of two distributions.
+- Will reappear later in the context of diagnostic tests and ROC curves.
 
 ---
 
-## Ways to Present Data (Grouping/Summarizing)
+## 2. Ways to Present Data
 
-**Raw-data table:** show directly when the sample size is moderate—no information loss.
+### Raw-data table
 
-**Frequency table / Histogram**  
+- Show all observations directly when the sample size is moderate.  
+- Advantage: no information loss.
+
+### Frequency table / Histogram
+
 - Show counts (or cumulative counts) for identical values or within bins.  
-- Bin count/boundaries can be **subjective**; **within-bin structure is lost**.
+- Bin count and boundaries can be **subjective**.  
+- Structure **within each bin is lost**.
 
-**Stem-and-Leaf Plot**  
-- Each value \(\to\) **stem** (less varying digits) + **leaf** (remaining digits).  
-- Preserves the shape like a histogram while **retaining the raw values** (near lossless).  
+### Stem-and-leaf plot
+
+- Each value is split into a **stem** (less varying digits) and a **leaf** (remaining digits).  
+- Preserves the overall shape like a histogram while keeping (almost) all raw values.  
 - A cumulative-count column helps locate the **median** quickly.
 
-**Box/Whisker Plot**  
-- Median, lower/upper quartiles \((Q_1,Q_3)\), interquartile range \(\mathrm{IQR}=Q_3-Q_1\), whiskers (range).  
-- **Skewness check**: with positive skew, the upper whisker/upper quartile side tends to extend further.
+### Box-and-whisker plot
 
-**Outlier Rules (convention)**  
-\[
-\text{Typical outliers: }\ [\,Q_1-1.5\,\mathrm{IQR},\ Q_3+1.5\,\mathrm{IQR}\,]
-\]
-\[
-\text{Extreme outliers: }\ [\,Q_1-3\,\mathrm{IQR},\ Q_3+3\,\mathrm{IQR}\,]
-\]
-- The constants \(1.5, 3\) are **tunable**—document your choice and rationale.
+- Displays the median, lower and upper quartiles \((Q_1, Q_3)\), the interquartile range \(\mathrm{IQR} = Q_3 - Q_1\), and whiskers (range).  
+- Skewness check: for positive skew, the upper whisker and upper quartile side tend to extend farther.
 
----
+### Outlier rules (convention)
 
-## Why Move to **Probability**?
+Typical outliers:
 
-Inferential statistics asks: the **probability** of observing data this extreme (or more) **if the null is true**.  
-→ Basic probability (events, sample space, axioms, laws) is the **backbone**.  
-→ Leads into **diagnostic tests & ROC** (TPR/FPR–based performance).
+$$
+[\, Q_1 - 1.5\,\mathrm{IQR}, \; Q_3 + 1.5\,\mathrm{IQR} \,]
+$$
 
----
+Extreme outliers:
 
-## Sets/Events and Notation
+$$
+[\, Q_1 - 3\,\mathrm{IQR}, \; Q_3 + 3\,\mathrm{IQR} \,]
+$$
 
-- **Sample space** \(\Omega\): set of all possible outcomes.  
-- **Event**: subset of \(\Omega\).  
-- **Operations**: union \(A\cup B\) (“A or B”), intersection \(A\cap B\) (“A and B”), complement \(A^{c}\).  
-- **Disjoint**: \(A\cap B=\varnothing\).  
-- **De Morgan’s laws**
-\[
-(A\cup B)^{c}=A^{c}\cap B^{c},\qquad
-(A\cap B)^{c}=A^{c}\cup B^{c}.
-\]
-> Note: \(\cup,\cap\) are **set/event** operations. Do not write \(\cup,\cap\) between probability **numbers** \(P(\cdot)\).
+The constants \(1.5\) and \(3\) are **tunable**. Always document your choice and rationale.
 
 ---
 
-## Frequentist Probability & Axioms
+## 3. Why Move to Probability?
 
-**Frequentist definition**
-\[
-P(A)=\lim_{n\to\infty}\frac{\#A}{n}.
-\]
+Inferential statistics often asks:
 
-**Axioms**
-\[
-0\le P(A)\le 1,\qquad P(\Omega)=1,
-\]
-\[
-A,B\ \text{disjoint}\Rightarrow P(A\cup B)=P(A)+P(B).
-\]
-(If not disjoint: \(P(A\cup B)=P(A)+P(B)-P(A\cap B)\) — covered next.)
+> What is the probability of observing data this extreme (or more) **if the null hypothesis is true**?
 
-**Empirical probability (estimate)**
-\[
-\hat P(A)=\frac{\#A}{n}\quad(\text{as } n\to\infty,\ \hat P(A)\xrightarrow{\text{LLN}} P(A)).
-\]
+So we need basic probability (sample space, events, axioms, laws).  
+This is the backbone that later leads to **hypothesis tests** and **ROC analysis**.
 
 ---
 
-## Example Probability Models
+## 4. Events, Sample Space, and Set Operations
 
-**Sum of two dice equals 7**  
-\[
-|\Omega|=36,\quad \#\{(i,j):i+j=7\}=6\ \Rightarrow\ P=6/36=1/6.
-\]
+- **Sample space** \(\Omega\): the set of all possible outcomes.  
+- **Event**: a subset of \(\Omega\).  
+- **Certain event**: the whole sample space, probability \(1\).  
+- **Null event**: impossible event, probability \(0\).  
+- **Operations**:  
+  - Union \(A \cup B\) (“A or B”),  
+  - Intersection \(A \cap B\) (“A and B”),  
+  - Complement \(A^c\).
 
-**Comparing group risks (sketch)**  
-A: 40 cases in \(10{,}000\); B: 50 in \(10{,}000\).  
-“Chance or increased risk?” \(\Rightarrow\) under the null (equal risks), evaluate the **probability of the observed difference**.
+- **Disjoint**: \(A \cap B = \varnothing\).
 
-**Fairness check**  
-Even outcome observed 90 times in 200 die rolls \(\Rightarrow \hat p=0.45\).  
-Under fairness (\(p=0.5\)), is this deviation **plausible**? \(\Rightarrow\) later via hypothesis tests.
+### De Morgan’s laws
 
----
+$$
+(A \cup B)^{c} = A^{c} \cap B^{c}, \qquad
+(A \cap B)^{c} = A^{c} \cup B^{c}.
+$$
 
-## One-liner Summary
-
-Ch.2 closes with summary metrics (**CV/SNR**) and display tools (**histogram, stem-and-leaf, boxplot**).  
-Next we cement the **language of probability** (events, axioms, models, empirical \(P\)) en route to **inference/tests & ROC**.
-
-
-
-# Events · Sample Space · Addition Law · Independence
-
-## Events, Sample Space, Venn diagrams
-
-- **Event space (sample space)**: all possible outcomes.  
-- **Event**: subset of the space.  
-- **Certain event**: the whole space, probability \(=1\).  
-- **Null event**: impossible, probability \(=0\).  
-- **Symbols**: union \(\cup\), intersection \(\cap\), complement \(A'\).
-
-**De Morgan’s laws**  
-\[
-(A\cup B)'=A'\cap B',\qquad (A\cap B)'=A'\cup B'.
-\]
+Note: \(\cup\) and \(\cap\) are **set / event** operations. Do not write \(\cup, \cap\) between probability **numbers** such as \(P(A)\).
 
 ---
 
-## Empirical Probability & Repeatability
+## 5. Frequentist Probability and Axioms
 
-- **Empirical probability**: relative frequency in repeated trials; as trials ↑, **LLN** ⇒ convergence to true \(P\).  
-- **Caution**: perfect repetition is rare (subjects/environments drift).  
-- **Subjective probability**: for rare/nonrepeatable events via belief/betting odds.
+### Frequentist definition
 
-**Odds**  
-\[
-\text{odds for }A \;=\; P(A):P(A').
-\]
-**Even odds** \(\Leftrightarrow\) \(P(A)=P(A')=0.5\).
+$$
+P(A) = \lim_{n \to \infty} \frac{\#A}{n},
+$$
 
----
+where \(\#A\) is the number of times event \(A\) occurs in \(n\) trials.
 
-##  Addition (Sum) Rule
+### Axioms
 
-**General form**  
-\[
-P(A\cup B)=P(A)+P(B)-P(A\cap B).
-\]
-> Subtract the overlap \(P(A\cap B)\) to avoid double-counting.
+$$
+0 \le P(A) \le 1, \qquad P(\Omega) = 1,
+$$
 
-- **Disjoint**: \(P(A\cap B)=0\Rightarrow P(A\cup B)=P(A)+P(B)\).  
-- For \(3+\) events use **inclusion–exclusion**.
+and for **disjoint** events \(A\) and \(B\),
 
-**Ex 1: Two-screen positive ⇒ referral**  
-Given \(P(A^+),\,P(B^+),\,P(A^+\cap B^+)\),
-\[
-P(\text{referral})=P(A^+\cup B^+)=P(A^+)+P(B^+)-P(A^+\cap B^+).
-\]
+$$
+P(A \cup B) = P(A) + P(B).
+$$
 
-**Ex: Two children with flu**  
-\(P(A_1)=P(A_2)=0.2,\; P(A_1\cap A_2)=0.1\).
-\[
-P(A_1\cup A_2)=0.2+0.2-0.1=0.3.
-\]
+If they are not disjoint:
 
----
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B).
+$$
 
-## Independence vs. Disjointness
+### Empirical probability (estimate)
 
-**Independence**  
-\[
-P(A\cap B)=P(A)\,P(B).
-\]
-> Knowing one does **not** change the probability of the other.
+$$
+\hat P(A) = \frac{\#A}{n}.
+$$
 
-- Not the same as **disjoint**: disjoint events with positive probabilities are **not** independent.  
-- Complements: \(A\) and \(A'\) are generally **dependent** (unless \(P(A)\in\{0,1\}\)).
-
-**Checks**
-
-- **Two screening tests**: if \(P(A^+\cap B^+)\ne P(A^+)P(B^+)\) ⇒ **dependent**.  
-- **Family flu** (\(A_1\): mom, \(A_2\): dad) cohabitation ⇒ likely **dependent**.  
-- **Dice**  
-  - \(A\): even; \(B=\{1,2\}\), \(C=\{1,2,3\}\)  
-  - \(P(A\cap B)=\tfrac{1}{6}=P(A)P(B)=\tfrac12\cdot\tfrac13\) ⇒ **A & B independent**  
-  - \(P(A\cap C)=\tfrac{1}{6}\neq P(A)P(C)=\tfrac12\cdot\tfrac12\) ⇒ **A & C dependent**
-
-**Conditional view**  
-Knowing \(A\) (even) does **not** change \(P(B)=\tfrac{1}{3}\) ⇒ independent.
+As \(n \to \infty\), the **law of large numbers (LLN)** gives \(\hat P(A) \to P(A)\).
 
 ---
 
-## Exam/Assignment Pointers
+## 6. Example Probability Models
 
-- Use Venn diagrams to visualize **overlap/disjoint/complements**.  
-- Write the **addition rule** correctly and explain **why subtract the intersection**.  
-- Test **independence** via numbers or **conditional probability** reasoning.  
-- Practice converting empirical probabilities to **odds** (for/against, even).  
-- For independent events, **multiply** to get the probability that all occur.
+### Sum of two dice equals 7
 
----
+Total outcomes:
 
-## One-liner Summary
+$$
+|\Omega| = 36.
+$$
 
-We reviewed set/Venn operations and drilled the **addition rule** and **independence (product condition)**.  
-Independence is not about overlap but about **\(P(A\cap B)=P(A)P(B)\)**.
+Number of pairs \((i, j)\) such that \(i + j = 7\) is 6, so
 
+$$
+P(\text{sum} = 7) = \frac{6}{36} = \frac{1}{6}.
+$$
 
+### Comparing group risks (sketch)
 
-# Probability: Independence / Addition / Multiplication & Examples
+Group A: 40 cases in 10,000.  
+Group B: 50 cases in 10,000.
 
-## Core Reminders
+Question: Is the difference due to chance or increased risk?  
+Under the null (equal risks), we will evaluate the **probability of the observed difference**.
 
-- **Independence**  
-  \[
-  P(A\cap B)=P(A)\,P(B)
-  \]
-  *Not* the same as disjointness.
+### Fairness check for a die
 
-- **Addition rule**  
-  \[
-  P(A\cup B)=P(A)+P(B)-P(A\cap B)
-  \]
+Even outcome observed 90 times in 200 rolls:
 
-- **Multiplication (mutual independence of \(n\) events)**  
-  \[
-  P\!\Big(\bigcap_{i=1}^{n} A_i\Big)=\prod_{i=1}^{n} P(A_i)
-  \]
-  Mutual independence requires the product condition for **all** subsets.
+$$
+\hat p = \frac{90}{200} = 0.45.
+$$
+
+Under fairness (\(p = 0.5\)), we will later test whether this deviation is **plausible** or evidence against fairness.
 
 ---
 
-## Example 1: **At least one** cancer case among 3 people
+## 7. Independence, Addition, and Multiplication
 
-- Individual risk \(p=0.24\) (assume **independent**).
-- Complement trick:
-  \[
-  P(\ge 1)=1-P(0)=1-(1-p)^3
-  =1-0.76^3\approx 1-0.438=0.562.
-  \]
+### Core reminders
 
----
+**Independence**
 
-## Example 2: **Overbooked seats**
+$$
+P(A \cap B) = P(A)\,P(B).
+$$
 
-- 100 seats, 105 passengers. Each passenger gets **exactly one seat** with equal chance.
-- For a fixed passenger, event “gets **some** seat”:
-  \[
-  A=\bigcup_{i=1}^{100} A_i,
-  \quad P(A_i)=\frac{1}{105}.
-  \]
-  The \(A_i\) are **disjoint**, so
-  \[
-  P(A)=\sum_{i=1}^{100}P(A_i)=\frac{100}{105}=\frac{20}{21}.
-  \]
-- “No seat”:
-  \[
-  P(A^{c})=1-\frac{20}{21}=\boxed{\frac{1}{21}}.
-  \]
+This is **not** the same as being disjoint.
 
----
+**Addition rule**
 
-## Example 2 — Extension: find \(n\) so that **≥1 miss** over \(n\) flights has 50%
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B).
+$$
 
-- Per flight seat probability \(q=\frac{20}{21}\) (assume independence).
-- All flights boarded:
-  \[
-  P(\text{all})=q^{\,n}.
-  \]
-- **Even odds**:
-  \[
-  1-q^{\,n}=0.5\Rightarrow q^{\,n}=0.5
-  \Rightarrow n=\frac{\ln 0.5}{\ln(20/21)}\approx 14.2.
-  \]
-- Integer choice:
-  - \(n=14\Rightarrow P(\ge 1\text{ miss})\approx 0.495\)
-  - \(n=15\Rightarrow \approx 0.519\) (**exceeds 50%**, conservative pick: 15)
+**Multiplication rule for mutually independent events**
+
+For events \(A_1, \dots, A_n\),
+
+$$
+P\!\Big( \bigcap_{i=1}^{n} A_i \Big)
+= \prod_{i=1}^{n} P(A_i),
+$$
+
+provided **every subset** of the events also satisfies the product condition (mutual independence).
 
 ---
 
-## Marginal Probability & Partitions
+## 8. Worked Examples
 
-- If \(\{B_1,\dots,B_k\}\) are **disjoint** and **partition** the space,
-  \[
-  P(A)=\sum_{j=1}^{k} P(A\cap B_j)\quad\text{(law of total probability)}.
-  \]
-- Example: screen \(A^+\) with \(B^+/B^-\)
-  \[
-  P(A^+)=P(A^+\cap B^+)+P(A^+\cap B^-).
-  \]
+### Example 1: At least one cancer case among three people
 
+Individual risk \(p = 0.24\) (assume independence).
 
+Use the complement trick:
 
-## Quantifying Dependence: Relative Risk (RR)
+$$
+\begin{aligned}
+P(\text{at least one}) 
+&= 1 - P(\text{none}) \\
+&= 1 - (1 - p)^3 \\
+&= 1 - 0.76^3 \approx 1 - 0.438 \approx 0.562.
+\end{aligned}
+$$
 
-- Definition (“risk of B depending on A”):
-  \[
-  RR=\frac{P(B\mid A)}{P(B\mid A^c)}
-  \]
-  - **Independence** ⇒ \(RR=1\)  
-  - \(RR\neq 1\) ⇒ **dependence**
+So there is about a 56% chance that at least one of the three has cancer.
+
+---
+
+### Example 2: Overbooked seats
+
+100 seats, 105 passengers. Each passenger gets **exactly one seat** with equal chance.
+
+For a fixed passenger, consider the event “gets some seat”:
+
+$$
+A = \bigcup_{i=1}^{100} A_i,
+$$
+
+where \(A_i\) is “gets seat \(i\)”.  
+Each \(A_i\) has probability \(1/105\), and the \(A_i\) are disjoint, so
+
+$$
+P(A) = \sum_{i=1}^{100} P(A_i) = \frac{100}{105} = \frac{20}{21}.
+$$
+
+Thus
+
+$$
+P(\text{no seat}) = 1 - \frac{20}{21} = \frac{1}{21}.
+$$
+
+---
+
+### Example 3: Extension of overbooking
+
+Find \(n\) so that the probability of **at least one missed seat** over \(n\) flights is 50%.
+
+Per flight seat probability \(q = 20/21\) (assume independence between flights).
+
+Probability that the passenger gets a seat on **all** \(n\) flights:
+
+$$
+P(\text{seat on all flights}) = q^{n}.
+$$
+
+We want
+
+$$
+1 - q^{n} = 0.5
+\quad \Rightarrow \quad
+q^{n} = 0.5
+\quad \Rightarrow \quad
+n = \frac{\ln 0.5}{\ln(20/21)} \approx 14.2.
+$$
+
+- For \(n = 14\): \(P(\text{at least one miss}) \approx 0.495\).  
+- For \(n = 15\): \(P(\text{at least one miss}) \approx 0.519\).  
+
+So with 15 flights, the chance of missing at least one seat is just over 50%.
+
+---
+
+## 9. Marginal Probability and Partitions
+
+If \(\{B_1, \dots, B_k\}\) are disjoint and form a partition of the sample space, then
+
+$$
+P(A) = \sum_{j=1}^{k} P(A \cap B_j)
+$$
+
+(law of total probability).
+
+Equivalently,
+
+$$
+P(A) = \sum_{j=1}^{k} P(A \mid B_j)\,P(B_j).
+$$
+
+Example: for a test \(A^+\) and a second test with outcomes \(B^+\) and \(B^-\),
+
+$$
+P(A^+) = P(A^+ \cap B^+) + P(A^+ \cap B^-).
+$$
+
+---
+
+## 10. Quantifying Dependence: Relative Risk (RR)
+
+Definition (“risk of \(B\) depending on \(A\)”):
+
+$$
+RR = \frac{P(B \mid A)}{P(B \mid A^c)}.
+$$
+
+- Independence gives \(RR = 1\).  
+- \(RR \neq 1\) indicates **dependence**.
 
 ### Example: Family flu
-Given
-\[
-P(A_2\mid A_1)=0.20,\quad P(A_2\mid A_1^c)\approx 0.089
-\Rightarrow RR\approx \frac{0.20}{0.089}\approx 2.2,
-\]
-so dad’s risk is **~2×** higher if mom is sick.
+
+Suppose
+
+$$
+P(A_2 \mid A_1) = 0.20, \qquad
+P(A_2 \mid A_1^c) \approx 0.089.
+$$
+
+Then
+
+$$
+RR \approx \frac{0.20}{0.089} \approx 2.2,
+$$
+
+so the second person’s risk is a little more than twice as high if the first person is sick.
 
 ---
 
-##  Law of Total Probability (Partition Rule)
+## 11. Law of Total Probability: Vaccine Example
 
-\[
-P(A)=\sum_i P(A\mid B_i)\,P(B_i)
-\]
-(\(B_i\): disjoint & exhaustive)
+Law of total probability:
 
-### Example: Mixed vaccine quality
-- Assume \(90\%\) **dead**, \(10\%\) **live**  
-- \(P(\text{disease}\mid \text{dead})=0.05,\; P(\text{disease}\mid \text{live})=0.5\)
+$$
+P(A) = \sum_i P(A \mid B_i)\,P(B_i),
+$$
 
-\[
-P(\text{disease})=0.05\times 0.9 + 0.5\times 0.1 = 0.095
-\]
+where the \(B_i\) form a partition.
 
-If the unvaccinated group’s disease rate is \(10\%\), vaccination **slightly lowers** the average risk (to **9.5%**).  
-Personal decisions can split into high/low risk \(HR, LR\):
-\[
-P(\text{disease})=P(\text{disease}\mid HR)P(HR)+P(\text{disease}\mid LR)P(LR),
-\]
-reflecting individual risk.
+Example: mixed vaccine quality:
 
-- **Prevalence**: fraction **currently** diseased at a time point.  
-- **Incidence**: probability of **new** cases over a time window (cumulative vs. rate).
+- 90% of doses are **dead** vaccine, 10% are **live**.  
+- \(P(\text{disease} \mid \text{dead}) = 0.05\).  
+- \(P(\text{disease} \mid \text{live}) = 0.5\).
+
+Then
+
+$$
+P(\text{disease})
+= 0.05 \times 0.9 + 0.5 \times 0.1
+= 0.095.
+$$
+
+If the disease rate in unvaccinated people is 10%, then vaccination slightly lowers the average risk to 9.5%.
+
+---
+
+## 12. One-line Summary
+
+We introduced basic probability (events, axioms, addition and product rules, independence) and linked it to real examples (dice, overbooking, vaccines).  
+These tools are the foundation for **hypothesis testing**, **risk comparison**, and **ROC analysis** later in the course.
