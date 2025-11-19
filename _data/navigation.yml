@@ -109,3 +109,10 @@ docs-ko:
       - title:  FMA 점수 예측 모델 만들기
         url:    2025/11/12/FMA_Prediction.html
 
+
+  - title:      알고리즘
+    children:
+      - title:  우주정거장
+        url:    2025/11/17/space-center.html
+
+
