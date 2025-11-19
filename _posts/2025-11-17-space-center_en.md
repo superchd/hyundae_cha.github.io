@@ -14,19 +14,19 @@ math: true
 
 > ## Idea for solving the problem
 >
-> * Starting from a point, you repeatedly drop a perpendicular (foot of the perpendicular) to the other segment. At some point, even if you keep dropping perpendiculars, the length of the segment will not get significantly shorter, and you will stop near that point.
+> * Start from a point and keep dropping the foot of the perpendicular to the other segment. At some point, even if you keep dropping perpendiculars, the distance will no longer decrease much — you stop near that point.
 >
-> ![space-station-2]({{ "/assets/images/2025-11-17-space-center/2.png" | relative_url }})
+> ![screenshot-2]({{ "/assets/images/2025-11-17-space-center/2.png" | relative_url }})
 >
-> * However, it’s a bit difficult to directly explain “dropping a perpendicular” to the computer. So I borrowed the following idea.
+> * But it's hard to directly teach the computer what it means to “drop a perpendicular.” So I borrowed the following idea instead.
 >
-> ![space-station-1]({{ "/assets/images/2025-11-17-space-center/1.png" | relative_url }})
+> ![screenshot-1]({{ "/assets/images/2025-11-17-space-center/1.png" | relative_url }})
 >
 > * Suppose we drop a perpendicular from point **B** to segment **CD**.
-> * If the distance from **B** to a point slightly **left** of the midpoint **M** on segment **CD** is greater than the distance from **B** to a point slightly **right** of **M**, then the candidate location of the foot of the perpendicular lies between **C** and **M**.  
+> * If the distance from **B** to a point slightly **left** of the midpoint **M** on segment **CD** is **greater** than the distance from **B** to a point slightly **right** of **M**, then the candidate location of the foot of the perpendicular lies between **C** and **M**.  
 >   If the opposite inequality holds, then the candidate region is between **M** and **D**.
-> * The trouble is that we need to move back and forth between segment **AB** and segment **CD** to find the optimal pair of coordinates, and implementing this “back-and-forth” logic cleanly in code is not easy.
-> * The direction I tried is roughly as follows – the key is how to design the conditionals.
+> * The problem is: we also have to move back and forth between segment **AB** and segment **CD** to find the optimal coordinates, and implementing this “back-and-forth” logic in code is tricky.
+> * The first approach I tried is below. The key is how to design the conditionals.
 
 ```python
 from math import sqrt, ceil, floor
@@ -50,6 +50,7 @@ def station(A, B, C, D):
         if True:
             continue
         break
+
 
 from math import sqrt, ceil, floor
 import math
@@ -83,21 +84,26 @@ def station(A, B, C, D):
     return
     
 # Store coordinates for A, B, C, D
-inp = [list(map(int, input().strip().split())) for _ in range(4)]
+inp = [list(map(int, input().strip().split())) for _ in range(4))]
 A, B, C, D = inp
 
 # Initial values: P <- A, Q <- C
 P, Q = A, C
 
-# tmp: was intended as a small threshold to decide left/right and termination
+# tmp: a very small value to decide which side to go (left/right)
+# and also to serve as the recursion stopping condition
 tmp = 1/100000000
 
 station(A, B, C, D)
-It feels like I solved it perfectly, but the answer doesn’t come out…
 
-I get an error: TypeError: 'NoneType' object is not iterable. I’m not sure why before and after are getting NoneType objects…
+```
+
+It feels like I solved it perfectly, but the answer still doesn’t come out…
+
+I get an error: TypeError: 'NoneType' object is not iterable. I don’t understand why before and after are getting NoneType — that’s confusing.
 
 
+```python
 from math import sqrt, ceil, floor
 import math
 
@@ -136,15 +142,18 @@ def station(A, B, C, D):
     return
     
 # Store coordinates for A, B, C, D
-inp = [list(map(int, input().strip().split())) for _ in range(4)]
+inp = [list(map(int, input().strip().split())) for _ in range(4))]
 A, B, C, D = inp
 
 # Initial values: P <- A, Q <- C
 P, Q = A, C
 
-# tmp: small threshold to decide direction (left/right) and also termination
+# tmp: a very small value to decide which side to go (left/right),
+# and also to serve as the recursion stopping condition
 tmp = 1/100000000
 
 station(A, B, C, D)
-I honestly have no idea why this still doesn’t work… I just don’t get it… 😵‍💫
 
+```
+
+I honestly have no idea why this doesn’t work… I just don’t get it…
