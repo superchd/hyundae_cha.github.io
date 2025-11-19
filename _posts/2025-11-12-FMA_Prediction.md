@@ -43,7 +43,7 @@ https://github.com/superchd/AI/blob/main/FMA_Prediction.ipynb
 
 
 
-![스크린샷 2025-11-12 175401](\assets\images\2025-11-12-FMA_Prediction\스크린샷 2025-11-12 175401.png)
+![스크린샷 2025-11-12 175401]({{ "/assets/images/2025-11-12-FMA_Prediction/스크린샷 2025-11-12 175401.png" | relative_url }})
 
 
 

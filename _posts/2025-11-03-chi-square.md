@@ -17,7 +17,7 @@ typora-root-url: ../
 
 예를들어, 과일을 묻는 설문조사에서 답변이 범주로 나뉘는 데이터
 
-좋아하는 과일 -> 사과  ![스크린샷 2025-11-10 113438](/assets/images/2025-11-03-chi-square/image-20251110113446789.png), 포도 
+좋아하는 과일 -> 사과  ![스크린샷 2025-11-10 113438]({{ "/assets/images/2025-11-03-chi-square/image-20251110113446789.png" | relative_url }}), 포도 
 
 연속형 -> 키 , 몸무게 , T-test, anova 
 
@@ -52,7 +52,7 @@ typora-root-url: ../
 
 예를 들어, '과일 선호도'가 '나이대'에 따라 달라지는지를 확인한다. 
 
-![image-20251110113521964](/assets/images/2025-11-03-chi-square/image-20251110113521964.png)
+![image-20251110113521964]({{ "/assets/images/2025-11-03-chi-square/image-20251110113521964.png" | relative_url }})
 
 이 데이터를 통해 귀무가설 설정이 가능하다!
 
@@ -72,7 +72,7 @@ typora-root-url: ../
 
 
 
-![image-20251110113736814](/assets/images/2025-11-03-chi-square/image-20251110113736814.png)
+![image-20251110113736814]({{ "/assets/images/2025-11-03-chi-square/image-20251110113736814.png" | relative_url }})
 
 카이제곱의 귀무가설은 "두 변수가 독립적이다"라고 가정을 했기 때문에 곱셈법칙에 의하여
 
@@ -98,7 +98,7 @@ typora-root-url: ../
 
 
 
-![image-20251110113805056](/assets/images/2025-11-03-chi-square/image-20251110113805056.png)
+![image-20251110113805056]({{ "/assets/images/2025-11-03-chi-square/image-20251110113805056.png" | relative_url }})
 
 
 
