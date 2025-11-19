@@ -82,8 +82,10 @@ docs-en:
 
   - title:      Algorithm
     children:
-      - title:  space-center
+      - title:  Space center
         url:    2025/11/17/space-center_en.html
+      - title:  Divide
+        url:    2025/11/18/divide_en.html
 
 
 
@@ -134,5 +136,7 @@ docs-ko:
     children:
       - title:  우주정거장
         url:    2025/11/17/space-center.html
+      - title:  전력망 둘로 나누기
+        url:    2025/11/18/divide.html
 
 
