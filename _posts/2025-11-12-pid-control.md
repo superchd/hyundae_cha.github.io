@@ -378,7 +378,7 @@ osciliate 가 심하다
 
 
 
-![스크린샷 2025-11-12 172437](\assets\images\2025-11-12-pid-control\스크린샷 2025-11-12 172437.png)
+![스크린샷 2025-11-12 172437]({{ "\assets\images\2025-11-12-pid-control\스크린샷 2025-11-12 172437.png" | relative_url }})
 
 
 
