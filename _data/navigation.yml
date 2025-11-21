@@ -74,6 +74,8 @@ docs-en:
         url:    2025/10/31/torque_en.html
       - title:  PID control
         url:    2025/11/12/pid-control_en.html
+      - title:  Impedance control
+        url:    2025/11/20/impedance-control_en.html
 
   - title:      AI
     children:
@@ -123,6 +125,8 @@ docs-ko:
         url:    2025/10/31/torque.html
       - title:  PID 컨트롤
         url:    2025/11/12/pid-control.html
+      - title:  임피던스 컨트롤
+        url:    2025/11/20/impedance-control.html
 
 
 

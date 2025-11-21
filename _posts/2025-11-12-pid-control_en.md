@@ -10,6 +10,171 @@ lang: en
 math: true
 ---
 
+
+
+## 1. What is PID control?
+
+PID control is one of the most basic ways to automatically decide how much **output (force/torque)** a motor should generate based on the **error** between what we want and what we currently have.
+
+- **Setpoint (desired value)**: what we want (e.g., joint angle = 60°)  
+
+- **Measurement (current value)**: what the sensor reads (e.g., 50°)  
+
+- **Error**:  
+  $$
+  e(t) = \text{setpoint} - \text{measurement}
+  $$
+
+A PID controller looks at this error and computes a control output:
+
+$$
+u(t) = K_P e(t) + K_I \int e(t)\,dt + K_D \frac{de(t)}{dt}
+$$
+
+where  
+
+- \(K_P\): proportional gain  
+- \(K_I\): integral gain  
+- \(K_D\): derivative gain  
+
+These three terms (P, I, D) each have a different role.
+
+---
+
+## 2. Intuitive meaning of P, I, D
+
+### 2.1 P (Proportional) — “A spring that pulls by how big the error is”
+
+The simplest part is the proportional term:
+
+$$
+u_P(t) = K_P e(t)
+$$
+
+- Larger error → larger output  
+- Smaller error → smaller output  
+
+Example:  
+Setpoint = 60°, current = 50° → error = 10°  
+→ \(u_P = K_P \times 10\)
+
+This is basically what the rule
+
+> torque ≈ (angle deviation) × P-gain
+
+is saying: it is **pure P-control**.
+
+---
+
+### 2.2 I (Integral) — “Frustration that accumulates over time”
+
+With only P-control, the system can stop in a state where it is **always a little bit short** of the target, because of friction or gravity.
+
+The integral term is:
+
+$$
+u_I(t) = K_I \int e(t)\,dt
+$$
+
+- If the error persists **for a long time**,  
+  → the integral term grows,  
+  → and the controller pushes harder to eliminate the remaining error.
+
+Intuition:
+
+- If you are always 2° short for a long time,  
+  → the integral term keeps increasing,  
+  → eventually pushing the system closer to the exact target.
+
+---
+
+### 2.3 D (Derivative) — “A damper that slows you down”
+
+The derivative term looks at **how fast the error is changing**:
+
+$$
+u_D(t) = K_D \frac{de(t)}{dt}
+$$
+
+- If you are approaching the target **too quickly**,  
+  → the derivative term acts like a brake,  
+  → reducing overshoot (shooting past the target and coming back).
+
+Intuition:
+
+- **P = spring** (pulls you toward the target based on position error)  
+- **D = damper** (resists motion based on velocity / rate of change of error)  
+
+So **PD control = virtual spring + damper**,  
+which is closely related to **impedance control** in robotics.
+
+---
+
+## 3. PID, PD control, and robots/exoskeletons (e.g., Harmony)
+
+In a robot or exoskeleton, the control loop often looks like this:
+
+```text
+Desired joint angle (θ_des)
+          ↓
+      [ PID / PD controller ]
+          ↓
+     Motor torque / current
+          ↓
+     Actual joint angle (θ)
+          ↓
+       Sensor feedback
+          └───────(error back to controller)
+```
+
+In devices like the Harmony exoskeleton, the internal controller typically includes:
+
+- **Gravity compensation**  
+- **PD-based impedance control (position + velocity)**  
+- Additional settings like **saturation torque, baseline torque**, etc.
+
+As a result, the torque we “see” from the device is actually:
+
+> **sensor torque = torque applied by the robot  
+>
+> + human torque  
+> + inertia/velocity effects**
+
+All mixed together.
+
+Because of this:
+
+- We **cannot simply say** “angle error × P-gain = human joint torque”, and  
+- It is **very difficult to separate the pure biological torque** from the robot’s own control torques and dynamics.
+
+This is exactly the point that was raised in the meeting:  
+even if we know the controller structure (PD/impedance + gravity compensation),  
+the measured torque is still a mixture of robot + human contributions.
+
+---
+
+## 4. One-line summary
+
+- **P (proportional)**: output is proportional to the size of the error  
+- **I (integral)**: output grows if the error persists over time  
+- **D (derivative)**: output acts like a brake when the error changes too quickly  
+
+Robots and exoskeletons use combinations like PID/PD to:
+
+- maintain a desired posture,  
+- move smoothly, and  
+- interact safely with humans.
+
+However, because of these internal controllers and gravity compensation,  
+the **measured torque already includes “controller + gravity + human” all together**,  
+and extracting **only the human torque** requires strong modeling assumptions and is often not practically achievable.
+
+
+
+
+
+
+
 ## Introduction
 
 The goal is to apply **resistance at the elbow joint (EF joint)** of the Harmony SHR robot.
