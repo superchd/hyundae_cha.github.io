@@ -81,6 +81,8 @@ docs-en:
     children:
       - title:  FMA score prediction model
         url:    2025/11/12/FMA_Prediction_en.html
+      - title:  Breast cancer survival prediction model
+        url:    2025/11/24/breast-cancer-prediction_en.html
 
   - title:      Algorithm
     children:
@@ -134,6 +136,8 @@ docs-ko:
     children:
       - title:  FMA 점수 예측 모델 만들기
         url:    2025/11/12/FMA_Prediction.html
+      - title:  유방암 생존 예측 모델 만들기
+        url:    2025/11/24/breast-cancer-prediction.html
 
 
   - title:      알고리즘
@@ -142,5 +146,6 @@ docs-ko:
         url:    2025/11/17/space-center.html
       - title:  전력망 둘로 나누기
         url:    2025/11/18/divide.html
-
+      - title:  시간 복잡도
+        url:    2025/11/21/asymptotic-notation.html
 
