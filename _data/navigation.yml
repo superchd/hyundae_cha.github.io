@@ -67,6 +67,14 @@ docs-en:
         url:    2025/11/12/estimation_en.html
       - title:  Null hypothesis
         url:    2025/11/12/null-hypothesis_en.html
+      - title:  ANOVA 
+        url:    2025/12/02/anova_en.html
+
+
+  - title:      Nonparametric methods 
+    children:
+      - title:  Wilcoxon signed rank test
+        url:    2025/12/01/Wilcoxon-signed-rank-test_en.html
 
   - title:      Control
     children:
@@ -120,6 +128,14 @@ docs-ko:
         url:    2025/11/12/estimation.html
       - title:  귀무가설
         url:    2025/11/12/null-hypothesis.html
+      - title:  ANOVA 
+        url:    2025/12/02/anova.html
+
+  - title:      비모수검정 
+    children:
+      - title:  윌콕슨 부호 순위 검정
+        url:    2025/12/01/Wilcoxon-signed-rank-test.html
+
 
   - title:      제어
     children:
