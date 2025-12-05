@@ -421,6 +421,20 @@ command_and_report.cpp 249번쨰 줄
 
 
 
+12/5 추가적으로
+
+
+임피던스 제어 <-> PID 컨트롤을 왔다갔다 할수록 코드를 짜면 좋을듯하다
+
+현재는 하모니 터치스크린으로 Active free 하면 임피던스 제어가 가능해보이는데
+
+그렇다면 이 임피던스 제어하는 방법을 찾고
+
+
+따로 PID 컨트롤 하는 방법을 또 찾으면 되지 않을까!!?!
+
+
+
 
 
 
@@ -567,3 +581,613 @@ command_and_report.cpp 249번쨰 줄
 >  연구자가 로봇을 제어하고 데이터를 읽는 구조**
 
 라고 보면 될 것 같아.
+
+
+
+
+
+
+
+# Harmony SHR Research Interface 구조 & UDP 제어 (한글 설명)
+
+이 리포지토리는 **Harmony SHR 재활 로봇을 위한 리서치 인터페이스**를 담고 있으며,  
+공식 Harmony SDK 위에 얹어서 연구용으로 쓰기 좋게 만든 C++/UDP 기반 구조이다.
+
+이 문서의 목표는 다음과 같다:
+
+1. `harmony_research_interface` 디렉토리 안에 뭐가 들어 있는지 설명
+2. 이 프로젝트가 로봇 PC(`harmony_dev_091024`) 안에서 어떻게 사용되는지 설명
+3. 로봇 PC에서 돌아가는 C++ 프로그램 `commandAndReport` 와  
+   로컬 PC에서 돌아가는 Python 스크립트가 **UDP로 어떻게 7개 조인트(오른팔)를 제어하는지** 설명
+
+---
+
+## 1. 전체 디렉토리 구조
+
+```text
+harmony_research_interface/
+├── builddir/            # Meson으로 빌드하면 생기는 결과물 (바이너리, 오브젝트 파일 등)
+├── include/             # 공개 헤더들 (SDK 인터페이스)
+│   ├── arm_controller.h
+│   ├── joint_states.h
+│   ├── overrides.h
+│   ├── research_interface.h
+│   ├── shared_memory.h
+│   ├── shared_memory_manager.h
+│   └── sizes.h
+├── src/                 # 핵심 구현 파일
+│   ├── arm_controller.cpp
+│   ├── research_interface.cpp
+│   └── meson.build
+├── tools/               # 실험/유틸용 실행 파일들
+│   ├── command_and_report.cpp      # (내가 직접 수정해서 사용하는 메인 파일)
+│   ├── command_and_report_all.cpp
+│   ├── controller_printer.cpp
+│   ├── data_exerciser.cpp
+│   ├── data_logger.cpp
+│   ├── set_controller.cpp
+│   ├── stub_harmony.cpp
+│   ├── udp_echo_server.cpp
+│   ├── udp_sender.cpp
+│   └── value_printer.cpp
+├── tests/               # googletest 기반 C++ 유닛 테스트
+├── subprojects/         # 외부 라이브러리 (Eigen 3.4.0, googletest 등)
+├── meson.build          # 최상위 빌드 설정
+└── README.md            # (이 문서)
+```
+
+### `include/` 디렉토리
+
+- `research_interface.h`  
+  Harmony SHR 로봇과 통신하기 위한 **최상위 SDK 인터페이스** 정의
+
+  - `harmony::ResearchInterface`  
+    - 로봇과 연결/초기화, 조인트 상태 읽기 등
+  - `makeLeftArmController()`, `makeRightArmController()`  
+    - 좌/우 팔 컨트롤러 생성
+
+- `arm_controller.h`  
+  팔 컨트롤러 클래스 정의
+
+  - `enum class Mode { harmony, jointsOverride };`
+  - `setJointsOverride(ArmJointsOverride)` / `removeOverride()`  
+    → 각 조인트에 오프셋·강성(임피던스) 등을 적용/해제하는 API
+
+- `joint_states.h`, `overrides.h`  
+  - 조인트 상태(각도, 속도, 토크 등)를 담는 구조체
+  - 조인트 오버라이드 명령(목표 각도/오프셋, stiffness, damping 등)을 담는 구조체
+
+### `src/` 디렉토리
+
+- 위에서 설명한 헤더들의 구현부
+- 실제 로봇과의 통신, shared memory, 모드 전환 등이 여기서 이루어짐
+- `tools/` 안의 각종 유틸 프로그램들은 이 SDK 레이어를 사용해서 만들어져 있음
+
+### `tools/` 디렉토리
+
+여기 있는 각 `.cpp` 파일 하나가 보통 하나의 실행 파일로 빌드된다.
+
+- `command_and_report.cpp`  
+  → Harmony SHR와 **외부 도구(예: Python)** 사이의 **브리지 역할**을 하는 핵심 프로그램  
+  → 이 리포지토리에서 가장 중요한 파일
+
+- `data_logger.cpp`  
+  → 조인트 데이터를 파일로 로깅하는 도구
+
+- `set_controller.cpp`, `controller_printer.cpp`, `value_printer.cpp`  
+  → 컨트롤러/오버라이드 설정을 변경하거나 확인하는 유틸
+
+- `stub_harmony.cpp`  
+  → 실제 하드웨어 없이 소프트웨어 구조를 테스트할 수 있는 더미 구현
+
+- `udp_echo_server.cpp`, `udp_sender.cpp`  
+  → UDP 통신을 테스트하기 위한 간단한 예제 서버/클라이언트
+
+실제 연구 과정에서는 주로 **`tools/command_and_report.cpp`** 를 수정·빌드하고,  
+빌드된 바이너리인 `builddir/tools/commandAndReport` 를 실행해서 사용한다.
+
+---
+
+## 2. 로봇 PC 내부에서의 위치 (`harmony_dev_091024`)
+
+Harmony SHR 로봇 PC(Portwell) 기준 디렉토리 구조는 대략 다음과 같다:
+
+```text
+/home/harmonyshr/dev/
+└── harmony_dev_091024/
+    ├── harmony_research_interface/          # ← 여기!
+    ├── harmony_research_interface_0.2.0.zip # 원본 압축 파일
+    ├── harmony_dev_022924.zip               # 이전 버전 아카이브
+    ├── harmony_dev_051524.zip
+    └── 기타 스크립트, 설정 파일 등
+```
+
+즉 이 C++ 프로젝트의 실제 경로는:
+
+```bash
+/home/harmonyshr/dev/harmony_dev_091024/harmony_research_interface
+```
+
+여기서 중요한 서브 경로는:
+
+- `include/`, `src/`, `meson.build`  
+  → C++ SDK 및 빌드 설정
+- `tools/command_and_report.cpp`  
+  → 메인 브리지 프로그램의 소스
+- `builddir/tools/commandAndReport`  
+  → 실제로 실행하는 바이너리
+
+---
+
+## 3. `command_and_report.cpp` / `commandAndReport` 바이너리
+
+### 3.1. 한 줄 요약
+
+> **로봇 PC에서 실행되는 C++ 프로그램**  
+> Harmony SDK를 초기화하고 UDP 소켓을 연 뒤,  
+> 로컬(또는 외부) PC에서 보내는 조인트 명령을 받아  
+> 오른팔 7개 조인트에 `setJointsOverride()`를 통해 적용한다.  
+> 동시에 현재 조인트 각도를 다시 외부 PC로 UDP로 스트리밍해 준다.
+
+### 3.2. 네트워크 설정
+
+```cpp
+#define PORT        12345        // Python 명령을 받는 UDP 포트 (로봇 PC 쪽)
+#define TARGET_IP   "192.168.2.2"// 조인트 상태를 보낼 외부 PC IP
+#define TARGET_PORT 12346        // 외부 PC에서 조인트 상태를 받을 포트
+```
+
+일반적인 설정 예시:
+
+- 로봇 PC IP: `192.168.2.1`
+- 연구자 노트북/데스크탑 IP: `192.168.2.2`
+
+**방향 1 – Python → 로봇 C++**
+
+- 목적지: `192.168.2.1:12345`
+- 메시지 형식: `"Jk_value"` (예: `"J3_0.174533"`)
+- 의미: “조인트 k에 `value` [rad] 만큼 오프셋을 걸어라”
+
+**방향 2 – 로봇 C++ → Python**
+
+- 목적지: `192.168.2.2:12346`
+- 페이로드: `double data[7]`
+  - 오른팔 7개 조인트의 각도 [rad]
+
+### 3.3. 조인트 인덱스 매핑
+
+C++ 코드에서는:
+
+```cpp
+// "J1_0.1" -> prefix "J1" -> index 0
+int jointIndexFromPrefix(const std::string& prefix)
+{
+    if (prefix.size() >= 2 && prefix[0] == 'J') {
+        int j = std::stoi(prefix.substr(1));  // "1".."7"
+        if (j >= 1 && j <= harmony::armJointCount) {
+            return j - 1; // 0-based index
+        }
+    }
+    return -1;
+}
+```
+
+- Python에서 `J1`, `J2`, ..., `J7` 를 보낸다.
+- C++ 에서는 이를 `0, 1, ..., 6` 의 인덱스로 변환.
+- `jointOffsets[7]` 배열에 각 조인트의 오프셋(rad)을 저장.
+- 패킷을 받을 때마다, 이 배열을 기준으로 `ArmJointsOverride` 객체를 만들고  
+  `right->setJointsOverride(...)` 를 호출한다.
+
+### 3.4. “한 관절만 제어하고 나머지는 프리” 전략
+
+SDK 쪽(`arm_controller.h`, `arm_controller.cpp`)을 보면:
+
+- `ArmController::Mode` 는 두 가지만 존재:
+  - `Mode::harmony`        : 펌웨어 기본 제어
+  - `Mode::jointsOverride` : 7개 조인트 전체를 override
+
+즉 **per-joint 모드가 없다.**  
+그래서 “Joint 3만 override, 나머지는 완전 Harmony 모드”는 **직접적으로는 불가능**하다.
+
+그래서 다음과 같은 우회 전략을 쓴다:
+
+1. 항상 7개 조인트에 대해 **전체 `ArmJointsOverride`** 를 만든다.
+2. `ResearchInterface.joints().rightArm` 으로부터 최신 조인트 각도를 읽는다.
+3. **타겟 조인트** (예: Joint 3)에 대해서만:
+   - 의미 있는 `offset` 값과 충분한 stiffness (`jointStiffness(j, scaling)`)를 주어
+   - 이 관절이 명령대로 움직이도록 한다.
+4. **나머지 조인트들**은:
+   - `offset = 0`
+   - `stiffness` 를 **매우 작게** 혹은 거의 0으로 준다.
+   - → 실제로 거의 힘을 안 주므로, 사람이 느끼기에 “프리”에 가깝다.
+
+모든 조인트를 완전 프리로 만들고 싶으면:
+
+```cpp
+right->removeOverride(); // mode = harmony 로 복귀
+```
+
+를 호출해야 한다.  
+하지만 그 순간 **모든 조인트 override가 꺼지기 때문에**,  
+제어하고 싶던 그 한 관절도 같이 프리가 된다.
+
+따라서 이 SDK 구조에서는:
+
+- **"진짜로 한 관절만 override, 나머지는 완전 펌웨어"**는 공식적으로 지원되지 않는다.
+- 대신,
+  - 7개 모두 override 모드에 두고,
+  - 제어하지 않을 조인트는 `현재 자세 + 거의 0에 가까운 stiffness` 로 세팅해서
+  - 실제로는 거의 붙잡지 않는 상태처럼 만들어 쓰는 것이 최선이다.
+
+---
+
+## 4. 로컬 PC에서의 Python 제어 스크립트
+
+### 4.1. 기본 UDP 송신 패턴
+
+```python
+import socket
+import math
+import time
+
+HARMONY_IP   = "192.168.2.1"  # 로봇 PC IP
+HARMONY_PORT = 12345          # commandAndReport 가 bind한 포트
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+def send_joint(joint_id, angle_rad):
+    '''
+    joint_id   : 1..7
+    angle_rad  : offset in radians
+    '''
+    msg = f"J{joint_id}_{angle_rad:.6f}".encode("utf-8")
+    sock.sendto(msg, (HARMONY_IP, HARMONY_PORT))
+```
+
+예시:
+
+- `send_joint(3, math.radians(10))`  
+  → Joint 3에 +10 deg 오프셋을 걸어라
+
+ROM 테스트, PID 제어, baseline 유지 스크립트 등은  
+기본적으로 이 메시지 형식을 공통으로 사용한다.
+
+### 4.2. 예: 단일 조인트 ROM 스윕
+
+Joint 3 ROM (min → max → min)을 테스트하려면:
+
+1. Python 쪽에서 `J3_value` 만 계속 보낸다.
+2. 다른 조인트에 대해서는 아무 명령도 보내지 않는다 (오프셋은 계속 0).
+3. C++ 쪽에서는:
+   - `jointOffsets[2]` 에만 시간이 지나며 값이 들어오고,
+   - 나머지 `jointOffsets[j] = 0` 상태 유지.
+   - 따라서 Joint 3만 의미 있는 stiffness와 offset을 갖게 되고, 실제로 그 관절만 움직인다.
+
+동시에 로봇 → Python 방향 UDP 스트림으로 넘어오는 `double[7]` 조인트 각도를 기록해 두면,  
+플롯을 그려서 **타겟 조인트만 움직이고 나머지는 거의 프리** 상태인지 확인할 수 있다.
+
+---
+
+## 5. 데이터 플로우 정리 (C++ ↔ Python)
+
+```text
+[Harmony SHR 하드웨어]
+        ▲
+        │ (펌웨어 + 내부 컨트롤러)
+        │
+[research_interface / arm_controller]
+        ▲
+        │ C++ API
+        │
+[tools/commandAndReport (C++)]  ← 로봇 PC에서 실행
+        ▲             ▲
+        │             │
+        │ UDP (조인트 상태: double[7])
+        │
+        │                 UDP ("Jk_value")
+        │
+[Python 스크립트 (로컬 PC)]   ← 노트북 / 데스크탑
+```
+
+- C++ 레이어(이 리포지토리)는 로봇과 통신하는 **공식 API** 역할.
+- Python은 그 위에서 돌아가는 **고수준 연구용 인터페이스**:
+  - 실험/프로토타입을 빠르게 짜기 좋고,
+  - ROM 스윕, PID 저항 테스트, baseline 유지 등의 제어기를 빨리 만들어 볼 수 있다.
+
+---
+
+## 6. 기본 워크플로우
+
+### 6.1. 로봇 PC에서 (Harmony SHR 연결된 상태)
+
+```bash
+cd /home/harmonyshr/dev/harmony_dev_091024/harmony_research_interface
+
+# 1) 처음 한 번: 빌드 디렉토리 생성
+meson setup builddir
+
+# 2) C++ 코드 수정 후:
+meson compile -C builddir commandAndReport
+
+# 3) 브리지 프로그램 실행
+cd builddir/tools
+./commandAndReport
+
+# 실행하면:
+# "UDP server listening on port 12345"
+# 등의 메시지가 보인다.
+```
+
+종료는:
+
+- 터미널에서 `Ctrl+D` 또는 `Ctrl+C` 를 누르면,
+- C++ 코드 안에서 `right->removeOverride()` 를 호출해 모든 override 를 해제하고
+- 소켓/스레드를 정리한 뒤 안전하게 종료되도록 구성하는 것을 목표로 한다.
+
+### 6.2. 로컬 PC에서 (Python 제어)
+
+```bash
+python Joint_test.py        # 예: ROM 테스트 스크립트
+python elbow_pid_control.py # 예: PID 기반 저항 제어 스크립트
+# 기타...
+```
+
+주의할 점:
+
+- Python 코드의 `HARMONY_IP`, `HARMONY_PORT` 가  
+  C++(`command_and_report.cpp`) 에서 사용하는 값과 일치해야 한다.
+- 메시지 포맷은 반드시 `"Jk_value"` (k=1..7, value는 radian) 형식을 따라야 한다.
+
+---
+
+## 7. 새로 보는 사람이 알아야 할 핵심 포인트
+
+- **핵심 SDK 클래스**
+  - `harmony::ResearchInterface`
+  - `harmony::ArmController`
+
+- **컨트롤 모드**
+  - `Mode::harmony`        : 펌웨어 기본 제어
+  - `Mode::jointsOverride` : 7개 조인트 모두 override
+
+- **이 리포지토리에서 하는 일**
+  - `commandAndReport` 가 로봇 PC에서 돌아가면서:
+    - Python이 보내는 `"Jk_value"` UDP 명령을 받고,
+    - `jointOffsets` 배열을 갱신하여 `ArmJointsOverride` 를 만들고,
+    - 오른팔 컨트롤러에 `setJointsOverride()` 를 호출
+    - 동시에 현재 오른팔 7개 조인트 각도를 `double[7]` UDP 패킷으로 Python 쪽에 계속 전송
+
+- **“한 관절만 제어”에 대한 현실적인 해법**
+  - SDK 구조상 per-joint 모드는 없다.
+  - 따라서:
+    - 7개 전체를 override 모드에 둔 상태에서,
+    - 제어하고 싶은 조인트만 의미 있는 offset + stiffness 를 주고,
+    - 나머지 6개는 offset=0, stiffness≈0 으로 설정해서
+    - 사람이 느끼기에 “프리(free)에 가깝게” 만드는 전략을 사용한다.
+
+자세한 동작을 더 알고 싶다면:
+
+- `include/research_interface.h`
+- `include/arm_controller.h`
+- `tools/command_and_report.cpp`
+- Python 예제 스크립트들 (`Joint_test.py`, `elbow_pid_control.py` 등)
+
+을 참고하면 된다.
+
+---
+
+
+
+
+
+
+
+# Harmony 연구용 도구들 개요 (tools/ 폴더)
+
+`tools/` 디렉토리 안의 여러 C++ 유틸들은  
+Harmony 연구 인터페이스를 활용해서 **실험, 디버깅, 데이터 수집**을 돕기 위한 도구들이다.  
+모두 **연구/개발용**이며, 임상용/상업용 목적이 아니다.
+
+---
+
+## 1. `controller_printer.cpp`
+
+**역할:**  
+컨트롤러와 조인트 오버라이드 설정을 사람이 읽기 좋은 형태로 출력하는 유틸.
+
+**특징:**
+
+- `ResearchInterface` 에 연결해서 현재 컨트롤러 설정을 조회한다.
+- 출력 내용 예:
+  - 컨트롤러 모드 (`harmony` vs `jointsOverride`)
+  - 조인트별 override 파라미터 (`offset`, `stiffness`, `damping`)
+  - 기타 컨트롤러 게인, 제한 값 등
+- 이런 상황에서 유용:
+  - 지금 로봇에 실제로 어떤 파라미터가 적용돼 있는지 확인하고 싶을 때
+  - 임피던스/override 튜닝을 디버깅할 때
+
+---
+
+## 2. `data_exerciser.cpp`
+
+**역할:**  
+이전에 기록한 조인트 궤적(log 파일)을 Harmony에 재생하는 도구.
+
+**동작 개요:**
+
+1. 실행할 때 log 파일 prefix를 인자로 받음  
+   → `./log/<prefix>_log.txt` 형식 가정
+2. log 파일에서:
+   - 첫 줄: 샘플링 주파수 `fs` 읽기
+   - 이후: 좌/우 팔 조인트 각도 데이터 읽기
+3. 각 줄을
+   - `std::array<double, nCols>` 로 파싱한 후
+   - 좌/우 팔에 대한 `ArmJointsOverride` 로 변환
+4. 절차:
+   - 현재 로봇 자세에서부터 임피던스(stiffness)를 0→목표 값으로 천천히 올린다.
+   - 로봇을 현재 자세 → 운동 시작 자세로 부드럽게 보낸다.
+   - log에 기록된 궤적을 실제 시간에 맞춰 재생하면서 override를 계속 전송한다.
+5. 끝나면:
+   - 운동을 종료하고 `removeOverride()` 를 호출해 override를 해제한다.
+
+**언제 쓰나:**
+
+- 이전에 기록한 운동을 동일하게 재현하고 싶을 때
+- 반복 실험, 데모, 운동 패턴 비교 등에 사용
+
+---
+
+## 3. `data_logger.cpp`
+
+**역할:**  
+Harmony에서 조인트 데이터를 파일로 저장하는 로거(logger).
+
+**하는 일:**
+
+- `ResearchInterface` 및 좌/우 팔 컨트롤러를 초기화
+- 설정한 샘플링 주파수(예: 200 Hz)로:
+  - 좌/우 팔의 조인트 상태(각도, 속도, 토크 등)를 읽어온 뒤
+  - 타임스탬프와 함께 파일(CSV 비슷한 형식)에 기록
+- 사용자가 중단할 때까지 계속 수행
+
+**언제 쓰나:**
+
+- 오프라인 분석(MATLAB, Python 등)을 위한 데이터 수집
+- `data_exerciser.cpp` 에서 재생할 log 파일 생성
+- 머신러닝/모델링용 데이터셋 구축
+
+---
+
+## 4. `set_controller.cpp`
+
+**역할:**  
+Harmony 팔 컨트롤러의 파라미터와 모드를 설정하는 도구.
+
+**역할 상세:**
+
+- `ResearchInterface` 를 초기화하고 좌/우 팔 컨트롤러를 가져온다.
+- 특정 컨트롤러 설정 구조체를 만든 후, 예를 들어:
+  - `controller->setControllerParams(params);`
+  - 같은 형식으로 적용
+- 변경 가능한 것들:
+  - 컨트롤러 모드 (예: 위치 제어, joint override 모드 등)
+  - 임피던스 관련 게인, 제한 값
+
+**언제 쓰나:**
+
+- 실험 전에 원하는 컨트롤러 설정을 맞춰두고 싶을 때
+- 좌/우 팔을 같은 설정으로 맞추거나 서로 다르게 설정하고 싶을 때
+
+---
+
+## 5. `stub_harmony.cpp`
+
+**역할:**  
+실제 로봇 하드웨어 없이도 코드를 테스트할 수 있는 “가짜 Harmony” 구현.
+
+**핵심 아이디어:**
+
+- `ResearchInterface` 와 관련 클래스들을 간단히 흉내내서,
+  - 실제 로봇 없이도 컴파일·실행이 가능하도록 만든다.
+- `init()`, `makeLeftArmController()`, `makeRightArmController()`, `joints().rightArm.getOrderedStates()` 같은 함수들은
+  - 더미 값/구조체를 반환.
+- `data_logger`, `data_exerciser` 같은 도구를
+  - 하드웨어 없이 노트북에서 돌려볼 수 있게 해준다.
+
+**언제 쓰나:**
+
+- 로봇이 없을 때 소프트웨어 구조를 먼저 디버깅/개발할 때
+- 테스트 환경에서 실습/연습용으로 사용할 때
+
+---
+
+## 6. `udp_echo_server.cpp`
+
+**역할:**  
+UDP 통신을 테스트하기 위한 **에코 서버(echo server)**.
+
+**동작:**
+
+- 지정된 포트에 UDP 소켓을 열고 `bind()` 한다.
+- 루프를 돌면서:
+  - `recvfrom()` 으로 데이터를 받으면
+  - 똑같은 데이터를 `sendto()` 로 다시 돌려보낸다.
+- Harmony와는 직접적인 상관 없음 (순수 네트워크 테스트용).
+
+**언제 쓰나:**
+
+- Python/다른 클라이언트에서 UDP 패킷을 잘 보내고 받는지 확인할 때
+- 메시지 포맷이 제대로 되었는지 확인할 때
+
+---
+
+## 7. `udp_sender.cpp`
+
+**역할:**  
+Harmony에서 읽어온 조인트 상태를 외부 머신으로 UDP 스트리밍하는 도구.
+
+**보내는 내용:**
+
+- 매 루프마다 `ResearchInterface` 로부터
+  - 좌/우 팔 조인트 상태를 읽고
+- 이를 `double` 배열(예: 조인트 각도 + 토크)로 패킹한 뒤
+- 설정된 IP/포트로 `sendto()` 로 전송한다.
+
+**언제 쓰나:**
+
+- 외부 도구(Python, MATLAB, Unity, ROS 등)에서
+  - 실시간으로 Harmony 조인트 상태를 시각화·분석하고 싶을 때
+- 온라인 처리/피드백 기반 실험을 할 때
+
+---
+
+## 8. `value_printer.cpp`
+
+**역할:**  
+Harmony SDK 내부 값들을 출력해 보는 디버깅/학습용 유틸.
+
+**동작:**
+
+- `ResearchInterface` 를 초기화하고
+  - 조인트 상태 (`position_rad`, `velocity`, `torque_Nm` 등)를 읽어와 출력
+  - 컨트롤러 파라미터, 기타 메타데이터를 출력
+- 예시:
+  - 각 구조체 멤버 값
+  - `sizeof(ArmControllerParams)` 같은 타입 크기
+
+**언제 쓰나:**
+
+- SDK 데이터 구조가 어떻게 생겼는지 감을 잡고 싶을 때
+- 값이 정상 범위에 있는지 빠르게 확인하고 싶을 때
+
+---
+
+## 이 도구들을 함께 쓰는 방법
+
+`tools/` 안 유틸들은 서로 보완 관계로 설계되어 있다:
+
+- **`data_logger.cpp`**  
+  → 실제 세션에서 모션 데이터를 기록
+
+- **`data_exerciser.cpp`**  
+  → 같은 모션 프로파일을 나중에 로봇에 그대로 재생
+
+- **`udp_sender.cpp` + 외부 클라이언트**  
+  → 조인트 상태를 실시간으로 스트리밍해 시각화·분석
+
+- **`set_controller.cpp` & `controller_printer.cpp`**  
+  → 컨트롤러 파라미터를 설정하고, 잘 적용되었는지 확인
+
+- **`value_printer.cpp` & `stub_harmony.cpp`**  
+  → 하드웨어 없이도 SDK 구조를 탐색하고 디버깅
+
+- **`udp_echo_server.cpp`**  
+  → UDP 통신 및 메시지 포맷을 먼저 검증한 뒤 Harmony와 연동
+
+이 도구들을 **블록처럼 조합**해서:
+
+- 새로운 실험 프로토콜,
+- 커스텀 컨트롤러,
+- 외부 시각화/분석 도구와의 연동
+
+을 점진적으로 만들어 나갈 수 있다.
