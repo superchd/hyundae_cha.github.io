@@ -874,3 +874,26 @@ if __name__ == "__main__":
 
 어떻게 개선할 것 인가??
 
+
+
+
+
+
+
+12/9/2025
+
+
+
+현재 한 관절 잡아서 kp, ki, kd 값 파라미터 튜닝중 
+
+어떤걸 기준으로 파라미터 튜닝해야하는지 모르겠음
+
+
+
+https://uofh-my.sharepoint.com/:x:/r/personal/hcha2_cougarnet_uh_edu/_layouts/15/Doc.aspx?sourcedoc=%7BEA728D6B-0A5D-4F3D-B7E0-7928D1B9F647%7D&file=PID_Tuning_Template_Harmony.xlsx&action=default&mobileredirect=true&wdOrigin=APPHOME-WEB.DIRECT%2CAPPHOME-WEB.BANNER.UPLOAD&wdPreviousSession=ada5ebb7-da55-447e-a1de-21adf03d8f00&wdPreviousSessionSrc=AppHomeWeb&ct=1765320400067
+
+관련 링크임
+
+
+여기서 파라미터값 수정중이다
+

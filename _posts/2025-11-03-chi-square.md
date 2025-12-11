@@ -62,6 +62,22 @@ typora-root-url: ../
 
 
 
+
+
+
+
+## 다양한 자유도에 따른 카이제곱 분포의 형태
+
+
+
+카이제곱 분포는 통계량의 정의 상 표준정규분포로부터 얻은 랜덤 변수들을 “제곱”해 더하기 때문에 양의 확률변수에 한해서만 존재한다는 것을 알 수 있다.
+
+또, “더한”것이기 때문에 더해주는 변수의 수가 많아질 수록 정규분포에 가까워진다. ([중심극한정리](https://angeloyeo.github.io/2020/09/15/CLT_meaning.html))
+
+
+
+![image-20251210143506250]({{ "/assets/images/2025-11-03-chi-square/image-20251210143506250.png" | relative_url}})
+
 ## 관측값과 기대값
 
 
@@ -264,6 +280,264 @@ $$
 > p-value가 0.05보다 크므로 **정규분포 적합성을 기각할 근거가 없고**,  
 > 정규분포는 age at spermatogenesis 데이터에 대해  
 > **적절한 적합을 보인다.**
+
+
+# Chi-square Goodness-of-Fit Test (Poisson)  
+
+월별 Guillain–Barré 증후군 사례 수
+
+## 1. Problem (문제 정리)
+
+The table below (Rosner, Chapter 4, with March 1985 excluded) shows the **monthly number of Guillain–Barré syndrome cases** in Finland from **April 1984 to October 1985**.
+
+Use the **chi-square goodness-of-fit test** to assess whether a **Poisson distribution** is an adequate model for these data.  
+State your conclusion.
+
+| Month (Year)     | # Cases | Month (Year)  | # Cases | Month (Year)   | # Cases |
+| ---------------- | ------- | ------------- | ------- | -------------- | ------- |
+| April 1984       | 3       | October 1984  | 2       | April 1985     | 7       |
+| May 1984         | 7       | November 1984 | 2       | May 1985       | 2       |
+| June 1984        | 0       | December 1984 | 3       | June 1985      | 2       |
+| July 1984        | 3       | January 1985  | 3       | July 1985      | 6       |
+| August 1984      | 4       | February 1985 | 8       | August 1985    | 2       |
+| September 1984   | 4       | —             | —       | September 1985 | 2       |
+| **Total months** | **18**  |               |         |                |         |
+
+**Goal (목표)**  
+
+- 월별 사례 수가 평균 `lambda` 를 갖는 **포아송 분포(Poisson)** 를 따른다고 볼 수 있는지 검정한다.
+
+---
+
+## 2. Step 1 – Hypotheses (가설 설정)
+
+- 귀무가설 H0:  
+  월별 Guillain–Barré 증후군 사례 수 X 는 어떤 평균 `lambda` 를 갖는 포아송 분포를 따른다.  
+  즉,  
+  `X ~ Poisson(lambda)`
+
+- 대립가설 HA:  
+  이 자료는 포아송 분포를 따르지 않는다.
+
+---
+
+## 3. Step 2 – Estimate lambda (평균 추정)
+
+먼저 **총 사례 수**와 **월 수**를 이용해 포아송 분포의 평균 `lambda` 를 추정한다.
+
+모든 사례 수를 더하면:
+
+`3 + 7 + 0 + 3 + 4 + 4 + 2 + 2 + 3 + 3 + 8 + 7 + 2 + 2 + 6 + 2 + 2 + 6 = 66`
+
+- 월 수 `n = 18`
+- 포아송 분포의 평균 추정값:
+
+```text
+lambda_hat = (총 사례 수) / (월 수)
+           = 66 / 18
+           ≈ 3.67
+```
+
+---
+
+## 4. Step 3 – Observed Counts by Category (관측도수 정리)
+
+각 월의 사례 수를 세면:
+
+- 0 cases: 1 month  
+- 1 case: 0 months  
+- 2 cases: 6 months  
+- 3 cases: 4 months  
+- 4 cases: 2 months  
+- 5 cases: 0 months  
+- 6 cases: 2 months  
+- 7 cases: 2 months  
+- 8 cases: 1 month  
+
+카이제곱 적합도 검정에서는 **각 칸의 기대도수(예상 개수)가 너무 작지 않도록** 값을 묶어 사용한다.  
+여기서는 다음과 같이 4개의 구간으로 묶는다.
+
+1. 0–2 cases  
+2. 3 cases  
+3. 4 cases  
+4. 5 이상 (5, 6, 7, 8...)
+
+이때 **관측도수(Observed, Oᵢ)** 는:
+
+- 0–2: `1 + 0 + 6 = 7`
+- 3: `4`
+- 4: `2`
+- 5 이상: `0 + 2 + 2 + 1 = 5`
+
+정리하면:
+
+| Category (cases) | Observed count Oᵢ |
+| ---------------- | ----------------- |
+| 0–2              | 7                 |
+| 3                | 4                 |
+| 4                | 2                 |
+| ≥5               | 5                 |
+
+---
+
+## 5. Step 4 – Expected Counts under Poisson (기대도수 계산)
+
+`lambda_hat = 3.67` 인 포아송 분포를 가정하고, 각 구간에 속할 **확률**을 계산한 다음  
+이를 이용해 **기대도수 Eᵢ** 를 구한다.
+
+### 5.1 Poisson probabilities (포아송 확률)
+
+포아송 확률질량함수(PMF)는 다음과 같다.
+
+```text
+P(X = k) = e^(-lambda) * lambda^k / k!
+```
+
+`lambda = 3.67` 을 대입해 필요한 값들을 계산하면 (계산 과정은 생략):
+
+```text
+P(0) ≈ 0.0255
+P(1) ≈ 0.0935
+P(2) ≈ 0.1716
+P(3) ≈ 0.2099
+P(4) ≈ 0.1926
+```
+
+이제 구간별 확률을 계산한다.
+
+1. 0–2 cases:
+
+   ```text
+   P(0 ≤ X ≤ 2) = P(0) + P(1) + P(2)
+                ≈ 0.0255 + 0.0935 + 0.1716
+                ≈ 0.2905
+   ```
+
+2. 3 cases:
+
+   ```text
+   P(X = 3) ≈ 0.2099
+   ```
+
+3. 4 cases:
+
+   ```text
+   P(X = 4) ≈ 0.1926
+   ```
+
+4. 5 이상:
+
+   먼저 0–4까지의 누적확률을 구한다.
+
+   ```text
+   P(0 ≤ X ≤ 4) ≈ 0.0255 + 0.0935 + 0.1716 + 0.2099 + 0.1926
+               ≈ 0.6930
+   ```
+
+   그러면
+
+   ```text
+   P(X ≥ 5) = 1 − P(0 ≤ X ≤ 4)
+            ≈ 1 − 0.6930
+            ≈ 0.3070
+   ```
+
+### 5.2 Expected counts (기대도수)
+
+각 구간의 기대도수 Eᵢ 는
+
+```text
+Eᵢ = n * P(해당 구간),   n = 18
+```
+
+따라서:
+
+```text
+E_0-2 = 18 * 0.2905 ≈ 5.23
+E_3   = 18 * 0.2099 ≈ 3.78
+E_4   = 18 * 0.1926 ≈ 3.47
+E_≥5  = 18 * 0.3070 ≈ 5.53
+```
+
+정리하면:
+
+| Category (cases) | Observed Oᵢ | Expected Eᵢ (Poisson, lambda = 3.67) |
+| ---------------- | ----------- | ------------------------------------ |
+| 0–2              | 7           | 5.23                                 |
+| 3                | 4           | 3.78                                 |
+| 4                | 2           | 3.47                                 |
+| ≥5               | 5           | 5.53                                 |
+
+모든 기대도수 Eᵢ 가 대략 5 이상이므로 카이제곱 근사 사용에 무리가 없다.
+
+---
+
+## 6. Step 5 – Chi-square Test Statistic (검정 통계량)
+
+카이제곱 적합도 검정 통계량은 다음과 같다.
+
+```text
+chi_square = Σ (Oᵢ − Eᵢ)² / Eᵢ
+```
+
+여기서 구간 수 `k = 4`.
+
+각 항을 계산하면:
+
+```text
+구간 0–2: (7 − 5.23)² / 5.23 ≈ 0.59
+구간 3:   (4 − 3.78)² / 3.78 ≈ 0.01
+구간 4:   (2 − 3.47)² / 3.47 ≈ 0.62
+구간 ≥5:  (5 − 5.53)² / 5.53 ≈ 0.05
+```
+
+따라서
+
+```text
+chi_square ≈ 0.59 + 0.01 + 0.62 + 0.05
+           ≈ 1.28
+```
+
+---
+
+## 7. Step 6 – Degrees of Freedom & p-value (자유도와 p값)
+
+자유도(df)는
+
+```text
+df = (구간 수) − 1 − (추정한 모수 개수)
+   = 4 − 1 − 1
+   = 2
+```
+
+요약:
+
+- `df = 2`
+- 검정 통계량 `chi_square ≈ 1.28`
+
+카이제곱 분포표 또는 계산기를 사용하면:
+
+- p-value ≈ 0.53 (0.05보다 훨씬 큼)
+- 95% 임계값은 `chi_square(0.95, df=2) ≈ 5.99`
+
+따라서
+
+```text
+1.28 < 5.99  →  귀무가설 기각 불가
+```
+
+---
+
+## 8. Step 7 – Conclusion (결론)
+
+유의수준 0.05에서,
+
+- **“월별 Guillain–Barré 증후군 사례 수가 포아송 분포를 따른다”**는 가설을 기각할 수 없다.
+
+즉,
+
+> 이 자료에서는 포아송 모형이 틀렸다고 말해 줄 만한 통계적 증거가 없다.  
+> 따라서 포아송 분포는 월별 환자 수를 설명하는 데 **충분히 적절한 모형**으로 보인다.
 
 
 

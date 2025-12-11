@@ -57,6 +57,8 @@ docs-en:
         url:    2025/10/22/binominal-distribution_en.html
       - title:  Continous distribution
         url:    2025/10/23/continous-distributions_en.html
+      - title:  Continous distribution
+        url:    2025/12/11/Statistical_Inference_en.html
       - title:  Central limit theorem
         url:    2025/10/31/central-limit-theorem.html
       - title:  Maximum likelihood estimation
@@ -69,6 +71,16 @@ docs-en:
         url:    2025/11/12/null-hypothesis_en.html
       - title:  ANOVA 
         url:    2025/12/02/anova_en.html
+      - title:  Linear Regression 
+        url:    2025/12/10/regression_en.html
+      - title:  T-test(Paired vs Unpaired)
+        url:    2025/12/11/Paired_VS_Unpaired_Ttest_en.html
+      - title:  T-value and F-value
+        url:    2025/12/11/Tvalue_Fvalue_en.html
+
+
+
+        
 
 
   - title:      Nonparametric methods 
@@ -99,6 +111,11 @@ docs-en:
       - title:  Divide
         url:    2025/11/18/divide_en.html
 
+  - title:      Data Structure
+    children:
+      - title:  Linked-list
+        url:    2025/12/10/linked-list_en.html
+
 
 
 docs-ko:
@@ -118,6 +135,8 @@ docs-ko:
         url:    2025/10/22/binominal-distribution.html
       - title:  연속확률분포
         url:    2025/10/23/continuous-distributions.html
+      - title:  통계적 추론
+        url:    2025/12/11/Statistical_Inference.html
       - title:  중심 극한 정리
         url:    2025/10/31/central-limit-theorem.html
       - title:  최대 우도 추정
@@ -130,11 +149,24 @@ docs-ko:
         url:    2025/11/12/null-hypothesis.html
       - title:  ANOVA 
         url:    2025/12/02/anova.html
+      - title:  선형회귀
+        url:    2025/12/10/regression.html
+      - title:  상관관계
+        url:    2025/12/11/correlation.html
+      - title:  T-test(Paired vs Unpaired)
+        url:    2025/12/11/Paired_VS_Unpaired_Ttest.html
+      - title:  T-value와 F-value
+        url:    2025/12/11/Tvalue_Fvalue.html
+
+
+      
 
   - title:      비모수검정 
     children:
       - title:  윌콕슨 부호 순위 검정
         url:    2025/12/01/Wilcoxon-signed-rank-test.html
+
+
 
 
   - title:      제어
@@ -147,6 +179,8 @@ docs-ko:
         url:    2025/11/12/pid-control.html
       - title:  임피던스 컨트롤
         url:    2025/11/20/impedance-control.html
+      - title:  하모니 저항주기
+        url:    2025/12/03/harmony-resistance.html
 
 
 
@@ -166,4 +200,9 @@ docs-ko:
         url:    2025/11/18/divide.html
       - title:  시간 복잡도
         url:    2025/11/21/asymptotic-notation.html
+
+  - title:      자료구조
+    children:
+      - title:  링크드 리스트
+        url:    2025/12/10/linked-list.html
 
