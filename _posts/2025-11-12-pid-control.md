@@ -41,6 +41,10 @@ $$
 
 을 뜻한다.
 
+
+
+![image-20251211165208860]({{"/assets/images/2025-11-12-pid-control/image-20251211165208860.png"|relative_url}})
+
 ---
 
 ## 2. P, I, D 각각 직관적으로 이해하기
@@ -60,11 +64,21 @@ $$
 목표 각도 60°, 현재 50° → 오차 10°  
 → \(u_P = K_P \times 10\)
 
-그래서 드. 김이 말한
+그래서 
 
 > 토크 ≈ (각도 변화) × P-gain
 
 은 **P 제어만** 쓴 아주 단순한 형태로 이해할 수 있다.
+
+
+
+
+
+![image-20251211165341613]({{"/assets/images/2025-11-12-pid-control/image-20251211165341613.png" | relative_url}})
+
+
+
+![image-20251211165403769]({{"/assets/images/2025-11-12-pid-control/image-20251211165403769.png" | relative_url}})
 
 ---
 
@@ -88,6 +102,10 @@ $$
   → I 항이 점점 커지면서  
   → 결국 목표각도에 더 가깝게 밀어 넣는다.
 
+![image-20251211165403769]({{"/assets/images/2025-11-12-pid-control/image-20251212114416377.png" | relative_url}})
+
+![image-20251211165403769]({{"/assets/images/2025-11-12-pid-control/image-20251212114453847.png" | relative_url}})
+
 ---
 
 ### 2.3 D (Derivative) — "속도를 잡아주는 댐퍼"
@@ -109,6 +127,16 @@ $$
 
 그래서 **PD 제어 = 가상의 스프링 + 댐퍼**,  
 이는 곧 **임피던스 제어(impedance control)** 와도 연결된다.
+
+
+
+![image-20251211165403769]({{"/assets/images/2025-11-12-pid-control/image-20251212114554680.png" | relative_url}})
+
+
+
+![image-20251211165403769]({{"/assets/images/2025-11-12-pid-control/image-20251212114632384.png" | relative_url}})
+
+
 
 ---
 
