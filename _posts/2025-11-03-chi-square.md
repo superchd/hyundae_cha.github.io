@@ -284,7 +284,7 @@ $$
 
 # Chi-square Goodness-of-Fit Test (Poisson)  
 
-월별 Guillain–Barré 증후군 사례 수
+월별 Guillain–Barré 증후군 사례 수 -
 
 ## 1. Problem (문제 정리)
 
