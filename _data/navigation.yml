@@ -103,6 +103,8 @@ docs-en:
         url:    2025/11/12/FMA_Prediction_en.html
       - title:  Breast cancer survival prediction model
         url:    2025/11/24/breast-cancer-prediction_en.html
+      - title:  Robot punch learning
+        url:    2026/01/06/Robot_punch_learning_en.html
 
   - title:      Algorithm
     children:
@@ -110,6 +112,12 @@ docs-en:
         url:    2025/11/17/space-center_en.html
       - title:  Divide
         url:    2025/11/18/divide_en.html
+      - title:  BFS
+        url:    2025/12/29/BFS_en.html
+      - title:  DFS
+        url:    2025/12/29/DFS_en.html
+      - title:  Backtracking
+        url:    2025/12/29/Backtracking_en.html
 
   - title:      Data Structure
     children:
@@ -190,6 +198,8 @@ docs-ko:
         url:    2025/11/12/FMA_Prediction.html
       - title:  유방암 생존 예측 모델 만들기
         url:    2025/11/24/breast-cancer-prediction.html
+      - title:  펀치 모형 학습하기
+        url:    2026/01/06/Robot_punch_learning.html
 
 
   - title:      알고리즘
@@ -200,6 +210,12 @@ docs-ko:
         url:    2025/11/18/divide.html
       - title:  시간 복잡도
         url:    2025/11/21/asymptotic-notation.html
+      - title:  BFS
+        url:    2025/12/29/BFS.html
+      - title:  DFS
+        url:    2025/12/29/DFS.html
+      - title:  Backtracking
+        url:    2026/01/02/Backtracking.html
 
   - title:      자료구조
     children:
